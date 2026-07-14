@@ -11,6 +11,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.missionarchitect.presentation.home.HomeScreen
+import com.example.missionarchitect.presentation.home.HomeScreenContent
+import com.example.missionarchitect.presentation.home.HomeViewModel
 import com.example.missionarchitect.presentation.theme.MissionArchitectTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,28 +24,39 @@ class MainActivity : ComponentActivity() {
         setContent {
             MissionArchitectTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Nitish Dubey",
+                    // 1. Use the Compose viewModel() function so it survives recompositions
+                    val viewModel: HomeViewModel = viewModel()
+
+                    // 2. Pass the innerPadding to your screen via a Modifier
+                    HomeScreen(
+                        homeViewModel = viewModel,
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
             }
         }
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MissionArchitectTheme {
-        Greeting("Nitish Dubey")
+
+    @Preview(showBackground = true, name = "1. Loading State")
+    @Composable
+    fun PreviewHomeScreenContentLoading() {
+        // Wrapping it in your theme ensures it gets the right typography and colors
+        MissionArchitectTheme {
+            HomeScreenContent(
+                stateMessage = "Fetching data..."
+            )
+        }
+    }
+
+    @Preview(showBackground = true, name = "2. Ready State")
+    @Composable
+    fun PreviewHomeScreenContentReady() {
+        MissionArchitectTheme {
+            HomeScreenContent(
+                stateMessage = "Dashboard Ready"
+            )
+        }
     }
 }
