@@ -2,13 +2,15 @@ package com.example.missionarchitect.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-
-class HomeViewModel: ViewModel() {
+@HiltViewModel
+class HomeViewModel @Inject constructor(): ViewModel() {
     // 1. Mutable State: Private so the UI layer cannot modify it directly.
     private val _uiState=MutableStateFlow("Initializing Dashboard...")
     // 2. Immutable State: Public for the Compose UI to observe.

@@ -11,12 +11,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.missionarchitect.presentation.home.HomeScreen
 import com.example.missionarchitect.presentation.home.HomeScreenContent
 import com.example.missionarchitect.presentation.home.HomeViewModel
 import com.example.missionarchitect.presentation.theme.MissionArchitectTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,8 +27,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             MissionArchitectTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    // 1. Use the Compose viewModel() function so it survives recompositions
-                    val viewModel: HomeViewModel = viewModel()
+                    // THE MAGIC LINE: Hilt will automatically find, create, and inject the ViewModel!
+                    val viewModel: HomeViewModel = hiltViewModel()
 
                     // 2. Pass the innerPadding to your screen via a Modifier
                     HomeScreen(
