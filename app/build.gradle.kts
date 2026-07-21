@@ -60,6 +60,8 @@ dependencies {
     implementation(libs.retrofit.gson)
 
 
+    implementation(libs.okhttp.logging.interceptor)
+
 
 
     // Coroutines & Lifecycle (ViewModel & collectAsStateWithLifecycle)
