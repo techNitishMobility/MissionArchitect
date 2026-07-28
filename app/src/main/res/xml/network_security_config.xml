@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- 🛡️ Security: प्रोडक्शन में Cleartext (HTTP) ट्रैफिक को पूरी तरह ब्लॉक करें -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+
+    <!-- 🛠️ Debug: स्थानीय विकास (Local Development) के लिए HTTP की अनुमति दें -->
+    <debug-overrides>
+        <trust-anchors>
+            <certificates src="user" />
+        </trust-anchors>
+    </debug-overrides>
+</network-security-config>

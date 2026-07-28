@@ -1,37 +1,51 @@
 package com.example.missionarchitect.presentation.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
-fun HomeScreen(homeViewModel: HomeViewModel,modifier: Modifier = Modifier)
-{
-    // 1. Observe the StateFlow safely, matching the host lifecycle state
-    val uiState by homeViewModel.uiState.collectAsStateWithLifecycle()
-// 2. Trigger side effects cleanly when the component enters composition
-    LaunchedEffect(key1 = Unit) {
-        homeViewModel.fetchDashboardData()
-    }
-    // 3. Render the localized UI content
-    HomeScreenContent(stateMessage = uiState,modifier = modifier)
+fun HomeScreen(viewModel: HomeViewModel= hiltViewModel()) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-}
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        when {
+            uiState.isLoading -> {
+                CircularProgressIndicator()
+            }
 
-@Composable
-fun HomeScreenContent(stateMessage: String,modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier.fillMaxSize().padding(16.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = stateMessage)
+            uiState.error != null -> {
+                Text(text = "Error : ${uiState.error}")
+            }
+
+            else -> {
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    items(uiState.users){ user->
+                   Row(modifier = Modifier.fillMaxWidth()) {
+                       Text(text = user.fullName, Modifier.padding(8.dp).background(Color.Green))
+                       Text(text = user.contactEmail, Modifier.padding(8.dp).background(Color.Yellow))
+
+                   }
+                    }
+                }
+            }
+        }
+
     }
 }
