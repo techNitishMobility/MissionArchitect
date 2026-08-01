@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.missionarchitect.domain.repository.UserRepository
+import com.example.missionarchitect.domain.util.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.delay
@@ -25,26 +26,23 @@ class HomeViewModel @Inject constructor(private val userRepository: UserReposito
         loadUser()
     }
 
-    private fun loadUser()
+    public fun loadUser()
     {
             viewModelScope.launch {
                 _uiState.value = HomeUiState(isLoading = true)
-                try {
-                    val userList = userRepository.fetchUsers()
-                    Log.d("Architect_Network_Log", "Response Received: $userList")
-                    _uiState.value = HomeUiState(users = userList, isLoading = false)
-                } catch (e: HttpException) {
-                    val errorMessage = when(e.code()) {
-                        404 -> "Resource not found (Check URL)"
-                        500 -> "Server is down, try again later"
-                        else -> "Something went wrong: ${e.message()}"
+
+                    when(val result =userRepository.fetchUsers())
+                    {
+                        is NetworkResult.Success->{ _uiState.value= HomeUiState(users = result.data?:emptyList(), isLoading = false)
+                        }
+                        is NetworkResult.Error->{ _uiState.value = HomeUiState(error = result.message, isLoading = false)
+                        }
+                        is NetworkResult.Loading->{_uiState.value= HomeUiState(isLoading = true)
+                        }
+
                     }
-                    _uiState.value = HomeUiState(error = errorMessage, isLoading = false)
-                } catch (e: IOException) {
-                    _uiState.value = HomeUiState(error = "Network error, check your connection", isLoading = false)
-                } catch (e: Exception) {
-                    _uiState.value = HomeUiState(error = "An unexpected error occurred: ${e.localizedMessage}", isLoading = false)
-                }
+
+
             }
     }
 }

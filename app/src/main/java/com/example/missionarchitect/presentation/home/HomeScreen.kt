@@ -9,7 +9,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -19,33 +24,55 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.missionarchitect.presentation.home.components.ErrorScreen
+import com.example.missionarchitect.presentation.home.components.LoadingScreen
+import com.example.missionarchitect.presentation.home.components.UserCard
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(viewModel: HomeViewModel= hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        when {
-            uiState.isLoading -> {
-                CircularProgressIndicator()
-            }
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {Text(text = "Mission December Users")},
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            )
+        }
+    ) {paddingValues ->
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues), contentAlignment = Alignment.Center) {
+            when {
+                uiState.isLoading -> {
+                    LoadingScreen()
+                }
 
-            uiState.error != null -> {
-                Text(text = "Error : ${uiState.error}")
-            }
+                uiState.error != null -> {
+                    ErrorScreen(
+                        message = uiState.error ?: "An unexpected error occurred",
+                        onRetry = { viewModel.loadUser() }
+                    )
+                }
 
-            else -> {
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    items(uiState.users){ user->
-                   Row(modifier = Modifier.fillMaxWidth()) {
-                       Text(text = user.fullName, Modifier.padding(8.dp).background(Color.Green))
-                       Text(text = user.contactEmail, Modifier.padding(8.dp).background(Color.Yellow))
+                else -> {
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        items(uiState.users,
+                            key = {user->user.id})  // Optimizes recomposition performance
+                        { user->
+                            UserCard(user.fullName,
+                                user.contactEmail)
 
-                   }
+                        }
                     }
                 }
             }
-        }
 
+        }
     }
+
 }
