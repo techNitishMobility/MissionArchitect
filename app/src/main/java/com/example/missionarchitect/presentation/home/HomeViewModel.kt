@@ -11,6 +11,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -23,26 +26,35 @@ class HomeViewModel @Inject constructor(private val userRepository: UserReposito
     val uiState : StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     init {
-        loadUser()
+        observeUsers()
+        refreshUsers()
     }
 
-    public fun loadUser()
-    {
-            viewModelScope.launch {
-                _uiState.value = HomeUiState(isLoading = true)
+    private fun refreshUsers() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true,error=null) }
+            when(val result = userRepository.refreshUsers())
+            {
+                is NetworkResult.Loading ->{_uiState.update { it.copy(isLoading = true) }}
 
-                    when(val result =userRepository.fetchUsers())
-                    {
-                        is NetworkResult.Success->{ _uiState.value= HomeUiState(users = result.data?:emptyList(), isLoading = false)
-                        }
-                        is NetworkResult.Error->{ _uiState.value = HomeUiState(error = result.message, isLoading = false)
-                        }
-                        is NetworkResult.Loading->{_uiState.value= HomeUiState(isLoading = true)
-                        }
+                is NetworkResult.Success -> {
+                    // Success! Data was saved to Room; Room Flow automatically updates the UI.
+                    _uiState.update { it.copy(isLoading = false) }}
 
-                    }
-
-
+            is NetworkResult.Error-> {
+                _uiState.update { it.copy(isLoading = false, error = result.message) }
             }
+        }
+        }
     }
+
+    private fun observeUsers() {
+       userRepository.getUsersStream()
+           .onEach {userList->
+           _uiState.update { currentState->
+               currentState.copy(users = userList)
+           }
+       }.launchIn(viewModelScope)
+    }
+
 }

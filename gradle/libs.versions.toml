@@ -17,6 +17,8 @@ retrofit = "3.0.0"
 okhttp = "5.4.0"
 serialization="1.7.3"
 material3 = "1.4.0"
+room = "2.6.1"
+
 
 
 
@@ -51,6 +53,10 @@ okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-i
 kotlin-serialization={ group ="org.jetbrains.kotlinx", name= "kotlinx-serialization-json",version.ref="serialization"}
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
