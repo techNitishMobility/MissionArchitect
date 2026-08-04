@@ -23,26 +23,27 @@ import androidx.compose.ui.unit.dp
 fun UserCard(
     name:String,
     email:String,
+    onClick:()-> Unit,
     modifier: Modifier= Modifier
-)
-{
+) {
     Card(
-        modifier=modifier.fillMaxWidth(),
+        onClick = onClick,
+        modifier = modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
-    ){
+    ) {
         Row(
-            modifier=modifier.padding(16.dp)
+            modifier = modifier.padding(16.dp)
                 .fillMaxWidth(),
-                verticalAlignment= Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically
         ) {
             // User Avatar Badge
             Surface(
                 modifier = modifier.size(40.dp),
                 shape = MaterialTheme.shapes.medium,
-                color=MaterialTheme.colorScheme.primary,
+                color = MaterialTheme.colorScheme.primary,
                 shadowElevation = 4.dp
             ) {
                 Box(contentAlignment = Alignment.Center)
@@ -50,25 +51,27 @@ fun UserCard(
                     Text(
                         text = name.take(1).uppercase(),
                         style = MaterialTheme.typography.titleMedium,
-                        color= MaterialTheme.colorScheme.onPrimary)
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
                 }
             }
-        }
-        Spacer(modifier = modifier.width(10.dp))
 
-        // User Info
-        Column(modifier=modifier.padding(16.dp,0.dp,0.dp,0.dp)){
-            Text(
-                text=name,
-                style= MaterialTheme.typography.titleMedium,
-                color= MaterialTheme.colorScheme.onSurface
-            )
-            Text(
-                text=email,
-                style= MaterialTheme.typography.bodySmall,
-                color= MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            Spacer(modifier = Modifier.width(16.dp))
+
+            // User Info
+            Column(modifier = modifier.padding(16.dp, 0.dp, 0.dp, 0.dp)) {
+                Text(
+                    text = name,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = email,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
+
     }
-
 }

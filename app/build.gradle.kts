@@ -2,8 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.hilt)
-
+    alias(libs.plugins.hilt.android)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -47,8 +47,10 @@ dependencies {
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
     // Add Hilt dependencies
     implementation(libs.hilt.android)
@@ -59,14 +61,12 @@ dependencies {
     implementation(libs.retrofit.android)
     implementation(libs.retrofit.gson)
 
-
     implementation(libs.okhttp.logging.interceptor)
-
-
+    implementation(libs.kotlin.serialization)
 
     // Coroutines & Lifecycle (ViewModel & collectAsStateWithLifecycle)
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
 
 
     testImplementation(libs.junit)
@@ -77,6 +77,5 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
     testImplementation(libs.kotlinx.coroutines.test)
-    implementation(libs.androidx.lifecycle.runtime.compose)
 
 }
