@@ -1,26 +1,53 @@
 package com.example.missionarchitect.presentation.home
 
+import app.cash.turbine.test
+import com.example.missionarchitect.domain.model.User
+import com.example.missionarchitect.domain.repository.UserRepository
+import com.example.missionarchitect.domain.util.NetworkResult
+import com.example.missionarchitect.util.MainDispatcherRule
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.every
+import io.mockk.mockk
 import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertFalse
+import junit.framework.TestCase.assertNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModelTest {
 
-    // 1. Create a Test Dispatcher to replace the Android Main Thread
-    private val testDispatcher = StandardTestDispatcher()
+    @get:Rule
+    val mainDispatcherRule= MainDispatcherRule()
+
+
+    // Faked Dependency
+    val userRepository: UserRepository = mockk(relaxed = true)
+
+    // System Under Test (SUT)
+    private lateinit var viewModel: HomeViewModel
+
+    private val testUsers = listOf(
+        User(id = 1, fullName =  "Alex Architect", contactEmail = "alex@december.com"),
+        User(id = 2, fullName = "Dev Developer", contactEmail = "dev@december.com")
+    )
+
 
     @Before
     fun setup() {
-        // Force the ViewModel to use our Test Dispatcher instead of the real Android Main thread
-        Dispatchers.setMain(testDispatcher)
+        // Mock Room stream return
+        every { userRepository.getUsersStream() } returns flowOf(testUsers)
+        coEvery { userRepository.refreshUsers() } returns NetworkResult.Success(Unit)
     }
 
     @After
@@ -30,20 +57,31 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun `when fetchDashboardData is called, state updates correctly`() = runTest {
+    fun `init streams cached users from repository successfully`() = runTest {
         // Arrange
-        val viewModel = HomeViewModel()
+        val viewModel = HomeViewModel(userRepository)
+        viewModel.uiState.test {
+            val state = awaitItem()
+            assertEquals(testUsers, state.users)
+            assertFalse(`state`.isLoading)
+            assertNull(state.error)
+        }
+    }
 
-        // Assert Initial State
-        assertEquals("Initializing Dashboard...", viewModel.uiState.value)
+    @Test
+    fun `refreshUsers failure sets error state without clearing cached users`() = runTest {
+        val errorMessage = "Network timeout"
+        coEvery { userRepository.refreshUsers() } returns NetworkResult.Error(message = errorMessage)
+        val viewModel= HomeViewModel(userRepository)
+        viewModel.retry()
+        viewModel.uiState.test {
+            val state=awaitItem()
+            assertEquals(testUsers, state.users)
+            assertFalse(`state`.isLoading)
+            assertEquals(errorMessage, state.error)
 
-        // Act
-        viewModel.fetchDashboardData()
-
-        // Fast-forward the virtual time to skip the 2000ms delay instantly!
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        // Assert Final State
-        assertEquals("Dashboard Ready", viewModel.uiState.value)
+        }
+        // Verify repository refresh was called
+        coVerify(atLeast = 1) { userRepository.refreshUsers() }
     }
 }

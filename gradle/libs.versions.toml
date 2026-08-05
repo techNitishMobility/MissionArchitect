@@ -11,13 +11,16 @@ composeBom = "2026.06.01"
 navigationCompose = "2.9.8"
 coroutinesTest = "1.11.0"
 hilt = "2.60.1" # Use the latest stable version
-hiltNavigationCompose = "1.2.0"
+hiltNavigationCompose = "1.4.0"
 ksp = "2.3.10"
 retrofit = "3.0.0"
 okhttp = "5.4.0"
-serialization="1.7.3"
+serialization="1.11.0"
 material3 = "1.4.0"
-room = "2.6.1"
+room = "2.8.4"
+mockk = "1.13.12"
+turbine = "1.1.0"
+
 
 
 
@@ -56,6 +59,8 @@ androidx-compose-material-icons-extended = { group = "androidx.compose.material"
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

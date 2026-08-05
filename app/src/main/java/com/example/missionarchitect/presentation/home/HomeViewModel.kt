@@ -48,6 +48,10 @@ class HomeViewModel @Inject constructor(private val userRepository: UserReposito
         }
     }
 
+    fun retry() {
+        refreshUsers()
+    }
+
     private fun observeUsers() {
        userRepository.getUsersStream()
            .onEach {userList->

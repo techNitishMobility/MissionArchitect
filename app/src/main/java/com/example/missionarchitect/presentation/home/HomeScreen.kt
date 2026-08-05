@@ -48,7 +48,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel(),  onUserClick: (userId
                 uiState.error != null -> {
                     ErrorScreen(
                         message = uiState.error ?: "An unexpected error occurred",
-                        onRetry = { viewModel.loadUser() }
+                        onRetry = { viewModel.retry() }
                     )
                 }
 
